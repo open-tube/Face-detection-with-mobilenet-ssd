@@ -28,19 +28,15 @@ from sklearn.utils import shuffle
 from copy import deepcopy
 from PIL import Image
 import csv
-import os
 import scipy.misc as sm
-from bs4 import BeautifulSoup
-from keras.applications.imagenet_utils import preprocess_input
-from keras import backend as K
 import os
 from keras.preprocessing import image
-import matplotlib as mpl 
+import matplotlib as mpl
 mpl.use('Agg')
 from matplotlib import pyplot as plt
 
 from termcolor import colored
-#from matplotlib import pyplot as plt 
+#from matplotlib import pyplot as plt
 from tqdm import tqdm
 #from __future__ import print_function
 
@@ -53,13 +49,13 @@ bb_expanded = False
 
 
 def save_bb(path, filename, results, prediction=True):
-  
+
   # print filename
-  _SIZ = 300 
+  _SIZ = 300
   # img = image.load_img(filename, target_size=(224, 224))
   img = image.load_img(filename)
-  
-  img_height = img.height 
+
+  img_height = img.height
   img_width = img.width
 
   img = image.img_to_array(img)
@@ -92,9 +88,9 @@ def save_bb(path, filename, results, prediction=True):
       det_xmax = result[2] * img_width / _SIZ
       det_ymin = result[3] * img_height / _SIZ
       det_ymax = result[4] * img_height / _SIZ
-    
 
-    
+
+
     xmin = int(det_xmin)
     ymin = int(det_ymin)
     xmax = int(det_xmax)
@@ -102,9 +98,9 @@ def save_bb(path, filename, results, prediction=True):
 
     if(prediction):
       score = det_conf
-    
+
     plt.imshow(img / 255.)
-    
+
     label = int(int(det_label))
 
     #print label
@@ -113,7 +109,7 @@ def save_bb(path, filename, results, prediction=True):
 
     label_name = "face"
     # label_name = class_names[label]
-    # print label_name 
+    # print label_name
     # print label
 
     if(prediction):
@@ -121,10 +117,10 @@ def save_bb(path, filename, results, prediction=True):
     else:
       display_txt = '{}'.format(label_name)
 
-      
+
     # print (xmin, ymin, ymin, ymax)
     coords = (xmin, ymin), (xmax-xmin), (ymax-ymin)
-    color_code = color_code-1 
+    color_code = color_code-1
     color = colors[0]
     currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=1))
     # currentAxis.text(xmin, ymin, display_txt, bbox={'facecolor':color, 'alpha':0.5})
@@ -134,7 +130,7 @@ def save_bb(path, filename, results, prediction=True):
   print ('saved' , path + filename)
 
   plt.clf()
-  
+
 
 def classify(img_path):
     img_ = io.imread(img_path)
@@ -144,7 +140,7 @@ def classify(img_path):
     if(img_.shape[-1]==4):
         img_ = img_[:,:,0:3]
     img_ = resize_fct(img_,tuple(input_shape[0:2]))[:,:,::-1] - 128. #BGR - 128.
-    img_ = np.expand_dims(img_,0) 
+    img_ = np.expand_dims(img_,0)
 
     prediction_ = sess.run('Sigmoid:0', feed_dict={'input_1:0': img_})
     return prediction_, img_
@@ -456,7 +452,7 @@ class BatchGenerator:
             self.filenames = []
             self.labels = []
 
-            data = np.load(annotations_path).item()
+            data = np.load(annotations_path, allow_pickle=True).item()
 
             n_train_samples = len(data)
             train_cnt =0 
